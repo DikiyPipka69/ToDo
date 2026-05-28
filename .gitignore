@@ -1,0 +1,21 @@
+# системный мусор
+.vscode/
+*.code-workspace
+.history/
+*.log
+.idea/
+*.iml
+*.iws
+.ipr
+.idea_modules/
+*.pyc
+__pycache__/
+# временные файлы (на всякий случай)
+uploads/
+temp_*.jpg
+# база данных
+*.db
+# изображения (на всякий случай)
+*.jpg
+*.png
+*.jpeg
