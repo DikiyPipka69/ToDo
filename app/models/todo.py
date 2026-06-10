@@ -1,16 +1,14 @@
-from sqlalchemy import DeclarativeBase, Mapped, mapped_column
+from sqlalchemy import Mapped, mapped_column
 from sqlalchemy import Boolean, String
+from app.database import Base
 
 
-class Base(DeclarativeBase):
-    pass
+class Todo(Base):
+    __tablename__ = 'todos'
 
-class Product():
-    __tablename__ = 'basa dannix 0_0'
-
-    id: Mapped[str] = mapped_column(prinmary_key=True)
+    id: Mapped[int] = mapped_column(primary_key=True)
     title: Mapped[str] = mapped_column(String(200), nullable=False)
-    completed: Mapped[bool]  = mapped_column(String(200), nullable=False)
+    completed: Mapped[bool]  = mapped_column(Boolean, nullable=False, default=False)
 
 
 
