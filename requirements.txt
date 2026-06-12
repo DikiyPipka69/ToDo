@@ -11,3 +11,6 @@ pytest
 httpx
 fastapi[standard]
 aiosqlite
+jinja2
+python-multipart
+aiofiles
