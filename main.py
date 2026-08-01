@@ -5,8 +5,11 @@ from pydantic import BaseModel
 from fastapi import Request
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+from models import Task
 
 app = FastAPI()
+
+tasks: list[Task] = []
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
@@ -16,7 +19,14 @@ templates = Jinja2Templates(directory="templates")
 async def index(request: Request):
     return templates.TemplateResponse(request, "index.html", {})
 
+@app.post('/tasks')
+def create_task(task: Task):
+    tasks.append(task)
+    return task
 
+@app.get('/tasks')
+def get_tasks():
+    return tasks
 
 
 
