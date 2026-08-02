@@ -35,6 +35,12 @@ h1 {
     border: 1px solid #ccc;
     border-radius: 4px;
     font-size: 14px;
+    transition: border-color 0.2s ease;
+}
+
+#task-title:focus {
+    outline: none;
+    border-color: #2563eb;
 }
 
 button {
@@ -45,6 +51,7 @@ button {
     color: #fff;
     font-size: 14px;
     cursor: pointer;
+    transition: background 0.2s ease;
 }
 
 button:hover {
@@ -57,31 +64,100 @@ button:hover {
     margin: 0;
 }
 
-#task-list li {
+/* каждая задача */
+.task-item {
     display: flex;
     align-items: center;
     gap: 10px;
     padding: 10px 0;
     border-bottom: 1px solid #eee;
     font-size: 14px;
+    animation: slideIn 0.25s ease;
+    transition: opacity 0.28s ease, transform 0.28s ease;
 }
 
-#task-list li.done span {
-    text-decoration: line-through;
-    color: #999;
+/* анимация появления новой задачи */
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-6px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
-#task-list li span {
+/* анимация исчезновения при удалении */
+.task-item.removing {
+    opacity: 0;
+    transform: translateX(12px) scale(0.97);
+}
+
+/* кружочек-чекбокс */
+.check-circle {
+    width: 20px;
+    height: 20px;
+    min-width: 20px;
+    padding: 0;
+    border-radius: 50%;
+    border: 2px solid #cbd5e1;
+    background: #fff;
+    cursor: pointer;
+    position: relative;
+    transition: border-color 0.2s ease, background 0.2s ease, transform 0.15s ease;
+}
+
+.check-circle:hover {
+    border-color: #2563eb;
+    transform: scale(1.08);
+}
+
+.task-item.done .check-circle {
+    background: #22c55e;
+    border-color: #22c55e;
+}
+
+/* галочка внутри кружочка, когда done */
+.task-item.done .check-circle::after {
+    content: "";
+    position: absolute;
+    left: 5px;
+    top: 1px;
+    width: 5px;
+    height: 9px;
+    border: solid #fff;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+
+.task-title {
     flex: 1;
+    transition: color 0.25s ease, text-decoration-color 0.25s ease;
+    text-decoration: line-through;
+    text-decoration-color: transparent;
 }
 
+.task-item.done .task-title {
+    color: #9ca3af;
+    text-decoration-color: #9ca3af;
+}
+
+/* кнопка удаления — мусорка */
 .delete-btn {
     background: none;
-    color: #d33;
-    font-size: 13px;
-    padding: 2px 6px;
+    padding: 4px;
+    border-radius: 6px;
+    color: #ef4444;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s ease, filter 0.2s ease, transform 0.15s ease;
 }
 
 .delete-btn:hover {
-    background: #fee;
+    background: none;
+    color: #dc2626;
+    filter: drop-shadow(0 0 6px rgba(239, 68, 68, 0.7));
+    transform: scale(1.1);
 }
