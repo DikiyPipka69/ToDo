@@ -19,18 +19,34 @@ templates = Jinja2Templates(directory="templates")
 async def index(request: Request):
     return templates.TemplateResponse(request, "index.html", {})
 
+# выложить задачу
 @app.post('/tasks')
 def create_task(task: Task):
     tasks.append(task)
     return task
 
+# получить все задачи
 @app.get('/tasks')
 def get_tasks():
     return tasks
 
+# удалить задачу
+@app.delete('/tasks/{task_id}')
+def delete_task(task_id: int):
+    for task in tasks:
+        if task.id == task_id:
+            tasks.remove(task)
+            return {'message': 'Task deleted successfully'}
+    raise HTTPException(status_code=404, detail='Task not found')
 
-
-
+# переключить состояние задачи
+@app.put('/tasks/{task_id}')
+def toggle_task(task_id: int):
+    for task in tasks:
+        if task.id == task_id:
+            task.done = not task.done
+            return task
+    raise HTTPException(status_code=404, detail='Task not found')
 
 
 
