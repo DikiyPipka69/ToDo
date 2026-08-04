@@ -5,7 +5,7 @@ from pydantic import BaseModel
 from fastapi import Request
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-from schemas import Task
+from models import Task
 
 app = FastAPI()
 
