@@ -6,14 +6,17 @@ from fastapi import Request
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from models import Task
+from database import Base, engine
+import models
 
 app = FastAPI()
 
 tasks: list[Task] = []
+Base.metadata.create_all(bind=engine)
 
+# html templates
 app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
-
 # получить страничку index.html
 @app.get('/')
 async def index(request: Request):
