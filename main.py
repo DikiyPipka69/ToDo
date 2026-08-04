@@ -5,7 +5,7 @@ from pydantic import BaseModel
 from fastapi import Request
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-from models import Task
+from schemas import Task
 
 app = FastAPI()
 
@@ -30,15 +30,6 @@ def create_task(task: Task):
 def get_tasks():
     return tasks
 
-# удалить задачу
-@app.delete('/tasks/{task_id}')
-def delete_task(task_id: int):
-    for task in tasks:
-        if task.id == task_id:
-            tasks.remove(task)
-            return {'message': 'Task deleted successfully'}
-    raise HTTPException(status_code=404, detail='Task not found')
-
 # переключить состояние задачи
 @app.put('/tasks/{task_id}')
 def toggle_task(task_id: int):
@@ -48,7 +39,14 @@ def toggle_task(task_id: int):
             return task
     raise HTTPException(status_code=404, detail='Task not found')
 
-
+# удалить задачу
+@app.delete('/tasks/{task_id}')
+def delete_task(task_id: int):
+    for task in tasks:
+        if task.id == task_id:
+            tasks.remove(task)
+            return {'message': 'Task deleted'}
+    raise HTTPException(status_code=404, detail='Task not found')
 
 
 
