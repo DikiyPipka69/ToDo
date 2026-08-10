@@ -1,61 +1,65 @@
-from fastapi import FastAPI
-from fastapi import HTTPException
-import uvicorn
-from pydantic import BaseModel
-from fastapi import Request
+from fastapi import FastAPI, HTTPException, Request, Depends
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-from models import Task
-from database import Base, engine
+from sqlalchemy.orm import Session
+import uvicorn
 import models
+import schemas
+from database import Base, engine, get_db
+
 
 app = FastAPI()
 
-tasks: list[Task] = []
 Base.metadata.create_all(bind=engine)
 
-# html templates
 app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates")
-# получить страничку index.html
+
+
 @app.get('/')
 async def index(request: Request):
     return templates.TemplateResponse(request, "index.html", {})
 
-# выложить задачу
-@app.post('/tasks')
-def create_task(task: Task):
-    tasks.append(task)
-    return task
 
-# получить все задачи
-@app.get('/tasks')
-def get_tasks():
-    return tasks
+# Создать задачу в БД
+@app.post('/tasks', response_model=schemas.TaskResponse)
+def create_task(task: schemas.TaskCreate, db: Session = Depends(get_db)):
+    db_task = models.Task(title=task.title)
+    db.add(db_task)
+    db.commit()
+    db.refresh(db_task)
+    return db_task
 
-# переключить состояние задачи
-@app.put('/tasks/{task_id}')
-def toggle_task(task_id: int):
-    for task in tasks:
-        if task.id == task_id:
-            task.done = not task.done
-            return task
-    raise HTTPException(status_code=404, detail='Task not found')
 
-# удалить задачу
+# Получить все задачи из БД
+@app.get('/tasks', response_model=list[schemas.TaskResponse])
+def get_tasks(db: Session = Depends(get_db)):
+    return db.query(models.Task).all()
+
+
+# Переключить состояние задачи в БД
+@app.put('/tasks/{task_id}', response_model=schemas.TaskResponse)
+def toggle_task(task_id: int, db: Session = Depends(get_db)):
+    db_task = db.query(models.Task).filter(models.Task.id == task_id).first()
+    if not db_task:
+        raise HTTPException(status_code=404, detail='Task not found')
+    
+    db_task.done = not db_task.done
+    db.commit()
+    db.refresh(db_task)
+    return db_task
+
+
+# Удалить задачу из БД
 @app.delete('/tasks/{task_id}')
-def delete_task(task_id: int):
-    for task in tasks:
-        if task.id == task_id:
-            tasks.remove(task)
-            return {'message': 'Task deleted'}
-    raise HTTPException(status_code=404, detail='Task not found')
-
-
-
-
-
-
+def delete_task(task_id: int, db: Session = Depends(get_db)):
+    db_task = db.query(models.Task).filter(models.Task.id == task_id).first()
+    if not db_task:
+        raise HTTPException(status_code=404, detail='Task not found')
+    
+    db.delete(db_task)
+    db.commit()
+    return {'message': 'Task deleted'}
 
 
 
