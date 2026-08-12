@@ -7,7 +7,6 @@ import models
 import schemas
 from database import Base, engine, get_db
 from models import Task as TaskModel
-from schemas import Task as TaskSchema
 
 # инициализация приложения
 app = FastAPI()
